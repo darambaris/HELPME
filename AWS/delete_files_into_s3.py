@@ -18,7 +18,7 @@ s3 = session.resource('s3')
 
 string_start = '__YOUR_STRING_FILTER__'
 bucket = s3.Bucket(S3_BUCKET_NAME)
-key = FILES_PATH # common path for files. It can has folders
+key = FILES_PATH # common path for files. It can contain folders
 
 for my_bucket_object in bucket.objects.filter(Prefix=key):
     
