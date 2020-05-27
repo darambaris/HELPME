@@ -1,2 +1,2 @@
 # HELPME
-Tutoriais para auxiliar no dia-a-dia da programação (: 
+Some useful scripts to help in the day-to-day 
