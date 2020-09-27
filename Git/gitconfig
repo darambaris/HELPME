@@ -1,0 +1,8 @@
+[user]
+	name = Jessika Darambaris
+	email = jessika.darambaris@gmail.com
+[core]
+	# configure vscode as default editor for the gitconfig file
+	editor = code --wait
+[color]
+	ui = true # enable colors (in general, "true" is default)
