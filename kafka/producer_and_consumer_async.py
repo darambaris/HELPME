@@ -35,13 +35,6 @@ async def consume(topic_name):
         # try to pool a message every 1 second
         message = c.poll(timeout=1.0)
 
-        # TODO: Handle the message. Remember that you should:
-        #   1. Check if the message is `None`
-        #   2. Check if the message has an error: https://docs.confluent.io/current/clients/confluent-kafka-python/#confluent_kafka.Message.error
-        #   3. If 1 and 2 were false, print the message key and value
-        #       Key: https://docs.confluent.io/current/clients/confluent-kafka-python/#confluent_kafka.Message.key
-        #       Value: https://docs.confluent.io/current/clients/confluent-kafka-python/#confluent_kafka.Message.value
-        #
         if message is None:
             logging.info("No message received!")
         elif message.error() is not None:
