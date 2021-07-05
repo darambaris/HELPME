@@ -6,7 +6,6 @@ from confluent_kafka.admin import AdminClient, NewTopic
 
 
 BROKER_URL = "localhost:9092"
-TOPIC_NAME = "my-first-python-topic"
 
 
 async def produce(topic_name):
@@ -46,28 +45,66 @@ async def consume(topic_name):
 
 
 # Article about async programming (in Portuguese): https://bityli.com/vsEQ5
-async def produce_consume():
+async def produce_consume(topic_name):
     """Runs the Producer and Consumer tasks"""
-    t1 = asyncio.create_task(produce(TOPIC_NAME))
-    t2 = asyncio.create_task(consume(TOPIC_NAME))
-    await t1  # block point coroutine
+    t1 = asyncio.create_task(produce(topic_name))
+    t2 = asyncio.create_task(consume(topic_name))
+    await t1  # blocks point coroutine
     await t2
 
 
+def create_topic(client, topic_name):
+    """Creates the topic with the given topic name"""
+    topic_config = {
+        "cleanup.policy": "delete",
+        "compression.type": "lz4",
+        "delete.retention.ms": 2000,
+        "file.delete.delay.ms": 2000,
+    }
+    futures = client.create_topics(
+        [
+            NewTopic(
+                topic=topic_name,
+                num_partitions=1,
+                replication_factor=1,
+                config=topic_config,
+            )
+        ]
+    )
+
+    for topic, future in futures.items():
+        try:
+            future.result()
+            print("topic created")
+        except Exception as e:
+            print(f"failed to create topic {topic_name}: {e}")
+            raise
+
+
+def topic_exists(client, topic_name):
+    """Checks if the given topic exists"""
+    # returns a dict with metadata
+    cluster_metadata = client.list_topics(timeout=10)
+
+    return cluster_metadata.topics.get(topic_name) is not None
+
+
 def main():
-
     client = AdminClient({"bootstrap.servers": BROKER_URL})
+    topic_name = "my-custom-python-topic"
 
-    # create a new topic
-    topic = NewTopic(topic=TOPIC_NAME, num_partitions=1, replication_factor=1)
-    client.create_topics([topic])
+    # checks if the given topic exists or creates a new one
+    if topic_exists(client, topic_name):
+        logging.warn(f"{topic_name} is already exists.")
+    else:
+        create_topic(client, topic_name)
 
     try:
-        asyncio.run(produce_consume())
+        asyncio.run(produce_consume(topic_name))
     except KeyboardInterrupt:
         print("shutting down...")
     finally:
-        client.delete_topics([topic])
+        client.delete_topics(topics=[topic_name])
         pass
 
 
