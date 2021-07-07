@@ -150,7 +150,7 @@ async def produce(topic_name, producer_type):
     tt = asyncio.create_task(function_name(topic_name))
     t2 = asyncio.create_task(_consume(topic_name))
     await tt  # blocks point coroutine
-
+    await t2
 
 def main():
     client = AdminClient({"bootstrap.servers": BROKER_URL})
