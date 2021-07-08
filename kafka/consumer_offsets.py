@@ -1,5 +1,3 @@
-# Please complete the TODO items in the code
-
 import asyncio
 
 from confluent_kafka import Consumer, Producer, OFFSET_BEGINNING
