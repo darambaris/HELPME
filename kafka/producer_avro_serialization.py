@@ -18,6 +18,15 @@ BROKER_URL = "PLAINTEXT://localhost:9092"
 class ClickAttribute:
     element: str = field(default_factory=lambda: random.choice(["div", "a", "button"]))
     content: str = field(default_factory=faker.bs)
+    
+    click_attribute_schema = {
+        "name": "ClickAttributes",
+        "type": "record",
+        "fields": [
+            {"name": "element", "type": "string"},
+            {"name": "content", "type": "string"},
+        ]
+    } 
 
     @classmethod
     def attributes(self):
@@ -31,8 +40,8 @@ class ClickEvent:
     uri: str = field(default_factory=faker.uri)
     number: int = field(default_factory=lambda: random.randint(0, 999))
     attributes: dict = field(default_factory=ClickAttribute.attributes)
-
-    json_schema = {
+    
+    click_event_schema = {
         "type": "record",
         "name": "clickEvent",
         "namespace": "com.udacity.lessons.avro",
@@ -45,24 +54,18 @@ class ClickEvent:
                 "name": "attributes", 
                 "type": {
                     "type": "map",
-                    "values": {
-                        "name": "ClickAttributes",
-                        "type": "record",
-                        "fields": [
-                            {"name": "element", "type": "string"},
-                            {"name": "content", "type": "string"},
-                        ]
-                    } 
+                    "values": ClickAttribute.click_attribute_schema
                 }
             }
         ]
     }
-    schema = parse_schema(schema=json_schema)
 
     def serialize(self):
         """Serializes the ClickEvent for sending to Kafka"""
+        schema = parse_schema(schema=ClickEvent.click_event_schema)
         out = BytesIO()
-        writer(out, self.schema, [asdict(self)])
+        writer(out, schema, [asdict(self)])
+
         return out.getvalue()
 
 
