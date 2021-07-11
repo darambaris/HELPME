@@ -14,6 +14,15 @@ faker = Faker()
 
 BROKER_URL = "PLAINTEXT://localhost:9092"
 
+@dataclass
+class ClickAttribute:
+    element: str = field(default_factory=lambda: random.choice(["div", "a", "button"]))
+    content: str = field(default_factory=faker.bs)
+
+    @classmethod
+    def attributes(self):
+        return {faker.uri_page(): ClickAttribute() for _ in range(random.randint(1, 5))}
+
 
 @dataclass
 class ClickEvent:
@@ -21,6 +30,7 @@ class ClickEvent:
     timestamp: str = field(default_factory=faker.iso8601)
     uri: str = field(default_factory=faker.uri)
     number: int = field(default_factory=lambda: random.randint(0, 999))
+    attributes: dict = field(default_factory=ClickAttribute.attributes)
 
     json_schema = {
         "type": "record",
@@ -31,6 +41,20 @@ class ClickEvent:
             {"name": "timestamp", "type": "string"},
             {"name": "uri", "type": "string"},
             {"name": "number", "type": "int"},
+            {
+                "name": "attributes", 
+                "type": {
+                    "type": "map",
+                    "values": {
+                        "name": "ClickAttributes",
+                        "type": "record",
+                        "fields": [
+                            {"name": "element", "type": "string"},
+                            {"name": "content", "type": "string"},
+                        ]
+                    } 
+                }
+            }
         ]
     }
     schema = parse_schema(schema=json_schema)
