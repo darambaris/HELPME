@@ -1,5 +1,3 @@
-# Please complete the TODO items in the code
-
 import asyncio
 from dataclasses import asdict, dataclass, field
 from io import BytesIO
