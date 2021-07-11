@@ -44,10 +44,6 @@ class ClickEvent:
     number: int = field(default_factory=lambda: random.randint(0, 999))
     attributes: dict = field(default_factory=ClickAttribute.attributes)
 
-    #
-    # TODO: Load the schema using the Confluent avro loader
-    #       See: https://github.com/confluentinc/confluent-kafka-python/blob/master/confluent_kafka/avro/load.py#L23
-    #
     schema = {
         "type": "record",
         "name": "click_event",
