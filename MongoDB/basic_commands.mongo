@@ -1,0 +1,17 @@
+/* 
+    DB Context: MongoDBA
+    Get results from the employees collection 
+*/
+db.createCollection("employees")
+db.getCollection("employees").find({})
+
+/* create a new collection to MongoDBA */
+db.createCollection("posts")
+
+/* show collection infos from MongoDBA */
+db.getCollectionInfos()
+
+
+/* drop database */
+db.dropDatabase()
+
